@@ -29,8 +29,8 @@ local Window = Library:CreateWindow{
 }
 
 local Tabs = {
-	Main = Window:CreateTab{
-		Title = "Main",
+	Home = Window:CreateTab{
+		Title = "Home",
 		Icon = "phosphor-house-bold"
 	},
 	AutoBuy = Window:CreateTab{
@@ -75,97 +75,276 @@ local Tabs = {
 	}
 }
 
-local Options = Library.Options  
-local MainSection = Tabs.Main:CreateSection("Basic Controls")
-local selectedSize = "2"
+Tabs.Home:CreateParagraph{
+    Title = "Settings",
+    Content = ""
+}
 
-local Input = MainSection:AddInput("SizeChanger", {
-    Title = "Size Changer",
-    Description = "Enter Size",
-    Default = "2",
-    Placeholder = "Type here...",
+local selectedSpeed = 125
+
+Tabs.Home:CreateInput("SpeedInput", {
+    Title = "Speed",
+    Default = "125",
+    Placeholder = "Enter Speed...",
     Numeric = true,
-    Finished = true,
+    Finished = false,
     Callback = function(Value)
-        selectedSize = Value
-        if _G.AutoSize then
-            game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", tonumber(selectedSize))
+        selectedSpeed = tonumber(Value) or 125
+        if _G.AutoSpeed and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = selectedSpeed
         end
     end
 })
 
-local Toggle = Tabs.Main:CreateToggle("AutoSize", {
-	Title = "Auto Set Size",
-	Description = "Auto Set ur Choosed Size",
-	Default = false,
-	Callback = function(Value)
-		_G.AutoSize = Value
-		while _G.AutoSize do
-			game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", tonumber(selectedSize))
-			task.wait(0.1)
-		end
-	end
+Tabs.Home:CreateToggle("AutoSpeedToggle", {
+    Title = "Auto Set Speed",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoSpeed = Value
+        while _G.AutoSpeed do
+            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = selectedSpeed
+            end
+            task.wait()
+        end
+    end
 })
 
-local selectedSpeed = "125"
-local Input = Tabs.Main:CreateInput("SpeedChanger", {
-	Title = "Speed Changer",
-	Description = "Enter Speed",
-	Default = "125",
-	Placeholder = "Enter Speed",
-	Numeric = true,
-	Finished = true,
-	Callback = function(Value)
-		selectedSpeed = Value
-		if _G.AutoSpeed then
-			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-				game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(selectedSpeed)
-			end
-		end
-	end
+local selectedSize = 2
+
+Tabs.Home:CreateInput("SizeInput", {
+    Title = "Size",
+    Default = "2",
+    Placeholder = "Enter Size...",
+    Numeric = true,
+    Finished = false,
+    Callback = function(Value)
+        selectedSize = tonumber(Value) or 2
+        if _G.AutoSize then
+            game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", selectedSize)
+        end
+    end
 })
 
-local Toggle = Tabs.Main:CreateToggle("AutoSpeed", {
-	Title = "Auto Set Speed",
-	Description = "Auto Set ur Choosed Speed",
-	Default = false,
-	Callback = function(Value)
-		_G.AutoSpeed = Value
-		while _G.AutoSpeed do
-			if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-				game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = tonumber(selectedSpeed)
-			end
-			task.wait()
-		end
-	end
+Tabs.Home:CreateToggle("AutoSizeToggle", {
+    Title = "Auto Set Size",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoSize = Value
+        while _G.AutoSize do
+            game:GetService("ReplicatedStorage").rEvents.changeSpeedSizeRemote:InvokeServer("changeSize", selectedSize)
+            task.wait(0.1)
+        end
+    end
 })
 
-Tabs.Main:CreateButton{
-	Title = "Free AutoLift Gamepass",
-	Callback = function()
-		local gamepassFolder = game:GetService("ReplicatedStorage").gamepassIds
-		local player = game:GetService("Players").LocalPlayer
-		for _, gamepass in pairs(gamepassFolder:GetChildren()) do
-			local value = Instance.new("IntValue")
-			value.Name = gamepass.Name
-			value.Value = gamepass.Value
-			value.Parent = player.ownedGamepasses
-		end
-	end
+Tabs.Home:CreateParagraph{
+    Title = "",
+    Content = ""
 }
 
-local Toggle = Tabs.Main:CreateToggle("WalkOnWater", {
-	Title = "Walk on Water",
-	Description = "",
-	Default = false,
-	Callback = function(Value)
-		if Value then
-			createParts()
-		else
-			makePartsWalkthrough()
-		end
-	end
+Tabs.Home:CreateParagraph{
+    Title = "Misc",
+    Content = ""
+}
+
+Tabs.Home:CreateInput("CameraZoomInput", {
+    Title = "Camera Zoom",
+    Default = "",
+    Placeholder = "Enter zoom distance...",
+    Numeric = true,
+    Finished = false,
+    Callback = function(Value)
+        local zoom = tonumber(Value)
+        if zoom then
+            zoom = math.clamp(zoom, 0.5, 400)
+            local player = game.Players.LocalPlayer
+            player.CameraMinZoomDistance = zoom
+            player.CameraMaxZoomDistance = zoom
+        end
+    end
 })
+
+local antiAFKEnabled = true
+local antiAFKConnection
+
+local function setupAntiAFK()
+    if antiAFKConnection then return end
+    local vu = game:GetService("VirtualUser")
+    antiAFKConnection = game.Players.LocalPlayer.Idled:Connect(function()
+        vu:Button2Down(Vector2.new(), workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        vu:Button2Up(Vector2.new(), workspace.CurrentCamera.CFrame)
+    end)
+end
+
+if antiAFKEnabled then
+    setupAntiAFK()
+end
+
+Tabs.Home:CreateToggle("AntiAFKToggle", {
+    Title = "Anti AFK",
+    Default = antiAFKEnabled,
+    Callback = function(Value)
+        antiAFKEnabled = Value
+        if Value then
+            setupAntiAFK()
+        else
+            if antiAFKConnection then
+                antiAFKConnection:Disconnect()
+                antiAFKConnection = nil
+            end
+        end
+    end
+})
+
+Tabs.Home:CreateButton{
+    Title = "Remove Portals",
+    Description = "Remove Roblox advertisement portals",
+    Callback = function()
+        for _, portal in pairs(game:GetDescendants()) do
+            if portal.Name == "RobloxForwardPortals" then
+                portal:Destroy()
+            end
+        end
+        
+        if _G.AdRemovalConnection then
+            _G.AdRemovalConnection:Disconnect()
+        end
+        
+        _G.AdRemovalConnection = game.DescendantAdded:Connect(function(descendant)
+            if descendant.Name == "RobloxForwardPortals" then
+                descendant:Destroy()
+            end
+        end)
+        
+        Fluent:Notify({
+            Title = "Portals Removed",
+            Content = "Roblox portals have been removed",
+            Duration = 3
+        })
+    end
+}
+
+Tabs.Home:CreateDropdown("TimeDropdown", {
+    Title = "Change Time",
+    Values = {"Morning", "Noon", "Afternoon", "Sunset", "Night", "Midnight", "Dawn", "Early Morning", "Day"},
+    Default = "Day",
+    Multi = false,
+    Callback = function(selection)
+        local lighting = game:GetService("Lighting")
+        lighting.Brightness = 2
+        lighting.FogEnd = 100000
+        lighting.Ambient = Color3.fromRGB(127,127,127)
+
+        if selection == "Morning" then
+            lighting.ClockTime = 6
+            lighting.Brightness = 2
+            lighting.Ambient = Color3.fromRGB(200, 200, 255)
+        elseif selection == "Noon" then
+            lighting.ClockTime = 12
+            lighting.Brightness = 3
+            lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        elseif selection == "Afternoon" then
+            lighting.ClockTime = 16
+            lighting.Brightness = 2.5
+            lighting.Ambient = Color3.fromRGB(255, 220, 180)
+        elseif selection == "Sunset" then
+            lighting.ClockTime = 18
+            lighting.Brightness = 2
+            lighting.Ambient = Color3.fromRGB(255, 150, 100)
+            lighting.FogEnd = 500
+        elseif selection == "Night" then
+            lighting.ClockTime = 20
+            lighting.Brightness = 1.5
+            lighting.Ambient = Color3.fromRGB(100, 100, 150)
+            lighting.FogEnd = 800
+        elseif selection == "Midnight" then
+            lighting.ClockTime = 0
+            lighting.Brightness = 1
+            lighting.Ambient = Color3.fromRGB(50, 50, 100)
+            lighting.FogEnd = 400
+        elseif selection == "Dawn" then
+            lighting.ClockTime = 4
+            lighting.Brightness = 1.8
+            lighting.Ambient = Color3.fromRGB(180, 180, 220)
+        elseif selection == "Early Morning" then
+            lighting.ClockTime = 2
+            lighting.Brightness = 1.2
+            lighting.Ambient = Color3.fromRGB(100, 120, 180)
+        elseif selection == "Day" then
+            lighting.ClockTime = 12
+            lighting.Brightness = 3
+            lighting.Ambient = Color3.fromRGB(255, 255, 255)
+        end
+    end
+})
+
+Tabs.Home:CreateParagraph{
+    Title = "",
+    Content = ""
+}
+
+Tabs.Home:CreateParagraph{
+    Title = "Useful",
+    Content = ""
+}
+
+Tabs.Home:CreateToggle("AutoFortuneToggle", {
+    Title = "Auto Fortune Wheel",
+    Default = false,
+    Callback = function(Value)
+        _G.autoFortuneWheelActive = Value
+        if Value then
+            local function openFortuneWheel()
+                while _G.autoFortuneWheelActive do
+                    local args = {
+                        [1] = "openFortuneWheel",
+                        [2] = game:GetService("ReplicatedStorage"):WaitForChild("fortuneWheelChances"):WaitForChild("Fortune Wheel")
+                    }
+                    game:GetService("ReplicatedStorage"):WaitForChild("rEvents"):WaitForChild("openFortuneWheelRemote"):InvokeServer(unpack(args))
+                    task.wait(0)
+                end
+            end
+            coroutine.wrap(openFortuneWheel)()
+        else
+            _G.autoFortuneWheelActive = false
+        end
+    end
+})
+
+Tabs.Home:CreateButton{
+    Title = "Infinite Yield",
+    Description = "Load Infinite Yield admin script",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        end)
+    end
+}
+
+Tabs.Home:CreateButton{
+    Title = "Shiftlock",
+    Description = "Load Shiftlock script",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Shiftlock-22314"))()
+        end)
+    end
+}
+
+Tabs.Home:CreateButton{
+    Title = "Execute Both",
+    Description = "Load both Infinite Yield and Shiftlock",
+    Callback = function()
+        pcall(function()
+            loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+        end)
+        pcall(function()
+            loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-Shiftlock-22314"))()
+        end)
+    end
+}
 
 local Toggle = Tabs.AutoFarm:CreateToggle("Weight", {
 	Title = "Auto Weight",
