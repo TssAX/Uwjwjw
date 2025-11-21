@@ -10,9 +10,24 @@ local Window = Library:CreateWindow{
     Resize = true,
     MinSize = Vector2.new(470, 380),
     Acrylic = true,
-    Theme = "DuoTone Dark Sea",
-      MinimizeKey = Enum.KeyCode.RightControl
+    Theme = {
+        Background = Color3.fromHex("#1E1E21"),
+        LightBackground = Color3.fromHex("#2A2D31"),
+        DarkBackground = Color3.fromHex("#18191C"),
+        Border = Color3.fromHex("#33363C"),
+        Topbar = Color3.fromHex("#1E1E21"),
+        Text = Color3.fromHex("#F3F3F3"),
+        TextDark = Color3.fromHex("#C8C8C8"),
+        Accent = Color3.fromHex("#4D6BF0"),
+        AccentLight = Color3.fromHex("#4D6BF0"),
+        ToggleOn = Color3.fromHex("#4D6BF0"),
+        ToggleOff = Color3.fromHex("#6B6B6B"),
+        Outline = Color3.fromHex("#3A3D42"),
+        Divider = Color3.fromHex("#3A3D42"),
+    },
+    MinimizeKey = Enum.KeyCode.RightControl
 }
+
 local Tabs = {
 	Main = Window:CreateTab{
 		Title = "Main",
