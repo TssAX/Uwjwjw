@@ -270,6 +270,8 @@ Tabs.Home:CreateDropdown("TimeDropdown", {
     end
 })
 
+local HomeSection = Tabs.Home:CreateSection("Useful")
+
 Tabs.Home:CreateToggle("AutoFortuneToggle", {
     Title = "Auto Fortune Wheel",
     Default = false,
@@ -292,6 +294,168 @@ Tabs.Home:CreateToggle("AutoFortuneToggle", {
         end
     end
 })
+
+Tabs.Home:CreateToggle("WalkOn", {
+    Title = "Walk On Water",
+    Description = "Create invisible platform to walk on water",
+    Default = false,
+    Callback = function(Value)
+        local parts = {}
+        local partSize = 2048
+        local totalDistance = 50000
+        local startPosition = Vector3.new(-2, -9.5, -2)
+        local numberOfParts = math.ceil(totalDistance / partSize)
+
+        local function createParts()
+            for x = 0, numberOfParts - 1 do
+                for z = 0, numberOfParts - 1 do
+                    local positions = {
+                        {pos = Vector3.new(x * partSize, 0, z * partSize), name = "Side"},
+                        {pos = Vector3.new(-x * partSize, 0, z * partSize), name = "LeftRight"},
+                        {pos = Vector3.new(-x * partSize, 0, -z * partSize), name = "UpLeft"},
+                        {pos = Vector3.new(x * partSize, 0, -z * partSize), name = "UpRight"}
+                    }
+                    
+                    for _, posData in ipairs(positions) do
+                        local part = Instance.new("Part")
+                        part.Size = Vector3.new(partSize, 1, partSize)
+                        part.Position = startPosition + posData.pos
+                        part.Anchored = true
+                        part.Transparency = 1
+                        part.CanCollide = true
+                        part.Name = "WaterPart_" .. posData.name .. "_" .. x .. "_" .. z
+                        part.Parent = workspace
+                        table.insert(parts, part)
+                    end
+                end
+            end
+        end
+
+        local function cleanupParts()
+            for _, part in ipairs(parts) do
+                if part and part.Parent then
+                    part:Destroy()
+                end
+            end
+            parts = {}
+        end
+
+        if Value then
+            createParts()
+        else
+            cleanupParts()
+        end
+    end
+})
+
+Tabs.Home:CreateToggle("GodMode", {
+    Title = "God Mode",
+    Description = "Auto join brawl continuously",
+    Default = false,
+    Callback = function(Value)
+        local godModeToggle = Value
+        
+        local function autoJoinBrawl()
+            while godModeToggle do
+                pcall(function()
+                    ReplicatedStorage.rEvents.brawlEvent:FireServer("joinBrawl")
+                end)
+                task.wait(0.1)
+            end
+        end
+
+        if Value then
+            task.spawn(autoJoinBrawl)
+        end
+    end
+})
+
+Tabs.Home:CreateToggle("DisableTrade", {
+    Title = "Disable Trade",
+    Description = "trading on/off",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            game:GetService("ReplicatedStorage").rEvents.tradingEvent:FireServer("disableTrading")
+        else
+            game:GetService("ReplicatedStorage").rEvents.tradingEvent:FireServer("enableTrading")
+        end
+    end
+})
+
+Tabs.Home:CreateToggle("Infinite", {
+    Title = "Infinite Jump",
+    Description = "Jump infinitely",
+    Default = false,
+    Callback = function(Value)
+        local infJumpEnabled = Value
+        local humanoid = nil
+
+        if player.Character then
+            humanoid = player.Character:FindFirstChild("Humanoid")
+        end
+        
+        player.CharacterAdded:Connect(function(char)
+            humanoid = char:WaitForChild("Humanoid")
+        end)
+
+        UserInputService.JumpRequest:Connect(function()
+            if infJumpEnabled and humanoid then
+                humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end)
+    end
+})
+
+Tabs.Home:CreateToggle("Clear", {
+    Title = "Auto Clear Inventory",
+    Description = "Automatically consume all boosts in inventory",
+    Default = false,
+    Callback = function(Value)
+        local autoEatBoostsEnabled = Value
+        local boostsList = {
+            "ULTRA Shake",
+            "TOUGH Bar",
+            "Protein Shake",
+            "Energy Shake",
+            "Protein Bar",
+            "Energy Bar",
+            "Tropical Shake"
+        }
+
+        local function eatAllBoosts()
+            local backpack = player:WaitForChild("Backpack")
+            local character = player.Character or player.CharacterAdded:Wait()
+
+            for _, boostName in ipairs(boostsList) do
+                local boost = backpack:FindFirstChild(boostName)
+                while boost do
+                    boost.Parent = character
+                    pcall(function()
+                        boost:Activate()
+                    end)
+                    task.wait(0)
+                    boost = backpack:FindFirstChild(boostName)
+                end
+            end
+        end
+
+        task.spawn(function()
+            while true do
+                if autoEatBoostsEnabled then
+                    eatAllBoosts()
+                    task.wait(2)
+                else
+                    task.wait(1)
+                end
+            end
+        end)
+    end
+})
+
+local HomeSection = Tabs.Home:CreateSection("Protection")
+
+
 
 local HomeSection = Tabs.Home:CreateSection("Scripts")
 
