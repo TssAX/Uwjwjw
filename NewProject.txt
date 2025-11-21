@@ -2442,4 +2442,14 @@ local treadmillToggle = Tabs.AutoStuff:CreateToggle("Tread Toggle", {
 			end
 		end)
 	end
-}) 
+})
+
+Window:SelectTab(1)
+
+Library:Notify{
+    Title = "Muscle Legends Script",
+    Content = "Loaded successfully!",
+    Duration = 5
+}
+
+SaveManager:LoadAutoloadConfig()
