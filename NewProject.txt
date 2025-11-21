@@ -25,7 +25,9 @@ local Window = Library:CreateWindow{
         Outline = Color3.fromHex("#3A3D42"),
         Divider = Color3.fromHex("#3A3D42"),
     },
-    MinimizeKey = Enum.KeyCode.RightControl
+    MinimizeKey = Enum.KeyCode.RightControl,
+    ShowMinimizeKey = true,
+    KeybindText = "🕉️",
 }
 
 local Tabs = {
