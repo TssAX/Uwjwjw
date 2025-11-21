@@ -75,10 +75,8 @@ local Tabs = {
 	}
 }
 
-Tabs.Home:CreateParagraph{
-    Title = "Settings",
-    Content = ""
-}
+local Options = Library.Options  
+local HomeSection = Tabs.Home:CreateSection("Settings")
 
 local selectedSpeed = 125
 
