@@ -136,10 +136,7 @@ Tabs.Home:CreateToggle("AutoSizeToggle", {
     end
 })
 
-Tabs.Home:CreateParagraph{
-    Title = "Misc",
-    Content = ""
-}
+local HomeSection = Tabs.Home:CreateSection("Misc")
 
 Tabs.Home:CreateInput("CameraZoomInput", {
     Title = "Camera Zoom",
@@ -273,11 +270,6 @@ Tabs.Home:CreateDropdown("TimeDropdown", {
     end
 })
 
-Tabs.Home:CreateParagraph{
-    Title = "Useful",
-    Content = ""
-}
-
 Tabs.Home:CreateToggle("AutoFortuneToggle", {
     Title = "Auto Fortune Wheel",
     Default = false,
@@ -300,6 +292,8 @@ Tabs.Home:CreateToggle("AutoFortuneToggle", {
         end
     end
 })
+
+local HomeSection = Tabs.Home:CreateSection("Scripts")
 
 Tabs.Home:CreateButton{
     Title = "Infinite Yield",
