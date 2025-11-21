@@ -139,7 +139,7 @@ Tabs.Home:CreateToggle("AutoSizeToggle", {
 })
 
 Tabs.Home:CreateParagraph{
-    Title = "",
+    Title = "-------------------------",
     Content = ""
 }
 
@@ -281,7 +281,7 @@ Tabs.Home:CreateDropdown("TimeDropdown", {
 })
 
 Tabs.Home:CreateParagraph{
-    Title = "",
+    Title = "-------------------------",
     Content = ""
 }
 
