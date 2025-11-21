@@ -3,8 +3,8 @@ local SaveManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.
 local InterfaceManager = loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/ActualMasterOogway/Fluent-Renewed/master/Addons/InterfaceManager.luau"))()
 
 local Window = Library:CreateWindow{
-    Title = "SLH Private Script",
-    SubTitle = "By skidder Yamo",
+    Title = "Sad V1.9",
+    SubTitle = "",
     TabWidth = 125,
     Size = UDim2.fromOffset(830, 525),
     Resize = true,
@@ -1035,28 +1035,28 @@ local muscleKingTimeGained = 0
 local lastMuscleKingTimeValue = nil
 
 local TimerParagraph = Tabs.Stats:CreateParagraph("SessionTimer", {
-	Title = "ÃƒÂ¢Ã‚ÂÃ‚Â±ÃƒÂ¯Ã‚Â¸Ã‚Â Session Time",
+	Title = "Session Time",
 	Content = "0d 0h 0m 0s",
 	TitleAlignment = "Left",
 	ContentAlignment = Enum.TextXAlignment.Left
 })
 
 local CustomTimerParagraph = Tabs.Stats:CreateParagraph("CustomTimer", {
-	Title = "ÃƒÂ¢Ã‚ÂÃ‚Â±ÃƒÂ¯Ã‚Â¸Ã‚Â Custom Timer",
+	Title = "Custom Timer",
 	Content = "Timer not started",
 	TitleAlignment = "Left",
 	ContentAlignment = Enum.TextXAlignment.Left
 })
 
 local LeaderParagraph = Tabs.Stats:CreateParagraph("LeaderStats", {
-	Title = "ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…  Leaderboard Stats",
+	Title = "Leaderboard Stats",
 	Content = "Loading stats...",
 	TitleAlignment = "Left",
 	ContentAlignment = Enum.TextXAlignment.Left
 })
 
 local IntParagraph = Tabs.Stats:CreateParagraph("IntStats", {
-	Title = "ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Âª Player Stats",
+	Title = "Player Stats",
 	Content = "Loading stats...",
 	TitleAlignment = "Left",
 	ContentAlignment = Enum.TextXAlignment.Left
