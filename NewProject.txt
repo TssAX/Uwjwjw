@@ -383,23 +383,22 @@ Tabs.Home:CreateToggle("DisableTrade", {
     end
 })
 
-Tabs.Home:CreateToggle("Infinite", {
-    Title = "Infinite Jump",
+Tabs.Home:CreateToggle("InfiniteJump", {
+    Title = "Inf Jump",
     Description = "Jump infinitely",
     Default = false,
     Callback = function(Value)
         local infJumpEnabled = Value
-        local humanoid = nil
+        local player = game.Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local humanoid = character:WaitForChild("Humanoid")
 
-        if player.Character then
-            humanoid = player.Character:FindFirstChild("Humanoid")
-        end
-        
         player.CharacterAdded:Connect(function(char)
+            character = char
             humanoid = char:WaitForChild("Humanoid")
         end)
 
-        UserInputService.JumpRequest:Connect(function()
+        game:GetService("UserInputService").JumpRequest:Connect(function()
             if infJumpEnabled and humanoid then
                 humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
             end
@@ -407,12 +406,13 @@ Tabs.Home:CreateToggle("Infinite", {
     end
 })
 
-Tabs.Home:CreateToggle("Clear", {
+Tabs.Home:CreateToggle("AutoClearInventory", {
     Title = "Auto Clear Inventory",
     Description = "Automatically consume all boosts in inventory",
     Default = false,
     Callback = function(Value)
         local autoEatBoostsEnabled = Value
+
         local boostsList = {
             "ULTRA Shake",
             "TOUGH Bar",
@@ -424,6 +424,7 @@ Tabs.Home:CreateToggle("Clear", {
         }
 
         local function eatAllBoosts()
+            local player = game.Players.LocalPlayer
             local backpack = player:WaitForChild("Backpack")
             local character = player.Character or player.CharacterAdded:Wait()
 
